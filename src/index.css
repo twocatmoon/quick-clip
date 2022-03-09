@@ -1,0 +1,68 @@
+html {
+    --darkPurple: #251B34;
+    --purple: #372B4A;
+    --lightPurple: #584774;
+    --brightPurple: #BC9AF4;
+    --red: #FF5858;
+
+    --background: var(--darkPurple);
+    --boxBg: var(--purple);
+    --border: var(--lightPurple);
+    --text: #FFFFFF;
+    --link: var(--brightPurple);
+    --buttonBg: var(--red);
+    --buttonText: #FFFFFF;
+}
+
+html,
+body {
+    overflow: hidden;
+    background: transparent;
+    user-select: none;
+}
+
+body {
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: var(--text);
+    background-color: var(--background);
+    padding: 0;
+    margin: 0;
+    min-width: 100%;
+    min-height: 100vh;
+}
+
+a,
+a:link,
+a:hover,
+a:active,
+a:visited {
+    color: var(--link);
+}
+
+button {
+    display: inline-block;
+    appearance: none;
+    border: none;
+    border-radius: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--border);
+    color: var(--buttonText);
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+button:not(:last-child) {
+    margin-right: 0.5rem;
+}
+
+button.--primary {
+    padding: 0.5rem 0.75rem;
+    background: var(--buttonBg);
+    color: var(--buttonText);
+}
