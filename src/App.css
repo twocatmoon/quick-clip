@@ -40,22 +40,44 @@
     bottom: 1rem;
     left: 1rem;
     right: 1rem;
-    background: #000000;
     border: solid 1px var(--border);
+    background-size: 16px 16px;
+    background-position: 0 0, 8px 8px;
+    background-image:
+        linear-gradient(45deg, var(--boxBg) 25%, transparent 25%, transparent 75%, var(--boxBg) 75%, var(--boxBg)),
+        linear-gradient(45deg, var(--boxBg) 25%, transparent 25%, transparent 75%, var(--boxBg) 75%, var(--boxBg));
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
 }
 
 .VideoEditor video {
+    transition: opacity 200ms ease;
+}
+
+.VideoEditor.--wide video {
     width: 100%;
+    height: auto;
+}
+
+.VideoEditor.--tall video {
+    width: auto;
     height: 100%;
-    object-fit: contain;
 }
 
 .VideoContainer {
-    position: relative;
+    position: absolute;
+    top: 50%;
+    height: 100%;
+    left: 50%;
+    width: 100%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .VideoContainerPanel {
@@ -78,17 +100,74 @@
     padding: 0.75rem;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.EditorControlGroup {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.EditorControlGroup:not(:last-child) {
+    margin-right: 1rem;
+    padding-right: 1rem;
+}
+
+.EditorControlGroup:not(:last-child)::after {
+    content: '';
+    display: block;
+    position: absolute;
+    width: 1px;
+    height: 100%;
+    top: 0;
+    right: 0;
+    display: inline-block;
+    background-color: var(--border);
+}
+
+.EditorControlGroup > *:not(:last-child) {
+    margin-right: 0.5rem;
+}
+
+.EditorControlGroup button,
+.EditorControlGroup input {
+    font-size: 0.75rem;
 }
 
 .VideoCropControl {
     position: absolute;
-    top: 25%;
-    left: 25%;
-    width: 50%;
-    height: 50%;
-    box-shadow: 0 0 0 2000px rgba(88, 71, 116, 0.5), 0 0 25px var(--border);
+    top: 0;
+    left: 0;
+    box-shadow: 0 0 0 2000px rgba(88, 71, 116, 0.85), 0 0 25px var(--border);
     cursor: move;
     pointer-events: auto;
+}
+
+.VideoCropControl:hover::before,
+.VideoCropControl:hover::after {
+    content: '';
+    display: block;
+    position: absolute;
+    background: var(--border);
+    opacity: 0.5;
+}
+
+.VideoCropControl::before {
+    top: 50%;
+    height: 2px;
+    left: 0;
+    width: 100%;
+}
+
+.VideoCropControl::after {
+    left: 50%;
+    width: 2px;
+    bottom: 0;
+    height: 100%;
 }
 
 .Handle__left,
@@ -96,18 +175,18 @@
 .Handle__bottom,
 .Handle__top {
     position: absolute;
-    background: var(--border);
+    background: var(--link);
     cursor: pointer;
     border-radius: 100px;
 }
 
-.Handle__left:hover,
-.Handle__right:hover,
-.Handle__bottom:hover,
-.Handle__top:hover {
-    background: var(--buttonBg);
-    z-index: 1;
-}
+/*.Handle__left:hover,*/
+/*.Handle__right:hover,*/
+/*.Handle__bottom:hover,*/
+/*.Handle__top:hover {*/
+/*    background: var(--buttonBg);*/
+/*    z-index: 1;*/
+/*}*/
 
 .Handle__left,
 .Handle__right {
@@ -139,4 +218,21 @@
 
 .Handle__bottom {
     bottom: -4px;
+}
+
+.CropInfo {
+    margin: 0.25rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 100px;
+    background: var(--link);
+    color: var(--background);
+    font-family: monospace;
+    font-size: 90%;
+    display: inline-flex;
+    opacity: 0.5;
+    white-space: nowrap;
+}
+
+.VideoCropControl:hover .CropInfo {
+    display: none;
 }
