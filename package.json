@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build --base=/quick-clip",
+    "build": "tsc && vite build && touch dist/.nojekyll",
     "preview": "vite preview"
   },
   "dependencies": {

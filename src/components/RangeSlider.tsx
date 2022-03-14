@@ -5,7 +5,7 @@ type RangeSliderProps = {
     max: number
     step?: number
     value: [from: number, to: number]
-    onChange: (value: RangeSliderProps['value']) => void
+    onChange: (value: [from: number, to: number]) => void
 }
 
 export default function RangeSlider (props: RangeSliderProps) {

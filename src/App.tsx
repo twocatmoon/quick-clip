@@ -1,4 +1,4 @@
-import {DragEventHandler, DragEvent, useState, useRef, useEffect} from 'react'
+import React, {DragEventHandler, DragEvent, useState, useRef, useEffect} from 'react'
 import './App.css'
 import RangeSlider from './components/RangeSlider'
 import pkg from '../package.json'
@@ -42,7 +42,7 @@ function App() {
         }
     }
 
-    const [ trimRange, setTrimRange ] = useState([ 5, 10 ])
+    const [ trimRange, setTrimRange ] = useState<[from: number, to: number]>([ 5, 10 ])
 
     const onRangeChanged = (range: [number, number]) => {
         const video = videoRef.current
@@ -114,7 +114,7 @@ function App() {
 
         if (!evt.dataTransfer.items) return
 
-        const file = evt.dataTransfer.items[0].getAsFile()
+        const file = evt.dataTransfer.items[0].getAsFile()!
         fileRef.current = file
         setVideoSrc(URL.createObjectURL(file))
     }
@@ -126,7 +126,7 @@ function App() {
         if (!videoRef.current) return
         const video = videoRef.current!
 
-        const el = document.querySelector('#currentTime')
+        const el = document.querySelector('#currentTime')!
         el.innerHTML = `${video.currentTime.toFixed(1)}/${(trimRange[1] / 1000).toFixed(1)}`
 
         if (video.paused) return
@@ -142,20 +142,20 @@ function App() {
 
     const dragStartRef = useRef({ x: 0, y: 0 })
 
-    const startDrag = (evt) => {
+    const startDrag = (evt: React.MouseEvent) => {
         dragStartRef.current.x = evt.clientX
         dragStartRef.current.y = evt.clientY
 
-        const containerEl = ref.current!.querySelector<HTMLDivElement>('.VideoContainer')
+        const containerEl = ref.current!.querySelector<HTMLDivElement>('.VideoContainer')!
         const containerElBrect = containerEl.getBoundingClientRect()
 
-        const cropEl = ref.current!.querySelector<HTMLDivElement>('.VideoCropControl')
+        const cropEl = ref.current!.querySelector<HTMLDivElement>('.VideoCropControl')!
         const cropElBrect = cropEl.getBoundingClientRect()
 
         const offsetX = containerElBrect.x + (evt.clientX - cropElBrect.x)
         const offsetY = containerElBrect.y + (evt.clientY - cropElBrect.y)
 
-        const xy = (evt) => {
+        const xy = (evt: MouseEvent) => {
             let x = evt.clientX - offsetX
             if (x < 0) x = 0
             if (x > containerElBrect.width - cropElBrect.width) x = containerElBrect.width - cropElBrect.width
@@ -167,13 +167,13 @@ function App() {
             return [ x, y ]
         }
 
-        const dragMoveHandler = (evt) => {
+        const dragMoveHandler = (evt: MouseEvent) => {
             const [ x, y ] = xy(evt)
 
             cropEl.style.transform = `translate(${x}px, ${y}px)`
         }
 
-        const dragStopHandler = (evt) => {
+        const dragStopHandler = (evt: MouseEvent) => {
             const [ x, y ] = xy(evt)
 
             const editorState = editorStateRef.current!
@@ -225,7 +225,7 @@ function App() {
         resizeDebounceRef.current = setTimeout(() => {
             const videoAspectRatio = videoEl.videoHeight / videoEl.videoWidth
 
-            const editorEl = ref.current!.querySelector('.VideoEditor')
+            const editorEl = ref.current!.querySelector('.VideoEditor')!
             const editorBrect = editorEl.getBoundingClientRect()
             const editorAspectRatio = editorBrect.height / editorBrect.width
 
@@ -235,7 +235,7 @@ function App() {
             editorState.videoWidth = videoEl.videoWidth
             editorState.videoHeight = videoEl.videoHeight
 
-            const containerEl = ref.current!.querySelector<HTMLDivElement>('.VideoContainer')
+            const containerEl = ref.current!.querySelector<HTMLDivElement>('.VideoContainer')!
 
             if (videoAspectRatio < editorAspectRatio) {
                 setWide()
@@ -271,7 +271,7 @@ function App() {
         window.focus()
     }
 
-    const msToTime = (s) => {
+    const msToTime = (s: number) => {
         function pad(n: number, z?: number) {
             z = z || 2
             return ('00' + n).slice(-z)
@@ -307,19 +307,19 @@ function App() {
     const exportVideo = () => {
         const [ input, output, width, height, x, y, from, to ] = prepareExport()
 
+        // @ts-ignore
         const cmd = `ffmpeg -y -i "${input}" -filter:v "crop=${width}:${height}:${x}:${y}" -vcodec libx264 -an -ss ${from} -to ${to} "${output}.mp4"`
         copyToClipboard(cmd)
         alert('Command copied to clipboard.')
-        // prompt('FFMPEG Command Copied!', cmd)
     }
 
     const exportGif = () => {
         const [ input, output, width, height, x, y, from, to ] = prepareExport()
 
+        // @ts-ignore
         const cmd = `ffmpeg -y -i "${input}" -filter:v "crop=${width}:${height}:${x}:${y},fps=24,scale=${Math.round(width / 2)}:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0 -an -ss ${from} -to ${to} "${output}.gif"`
         copyToClipboard(cmd)
         alert('Command copied to clipboard.')
-        // prompt('FFMPEG Command:', cmd)
     }
 
     /*
