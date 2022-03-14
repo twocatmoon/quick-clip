@@ -1,7 +1,7 @@
 import {DragEventHandler, DragEvent, useState, useRef, useEffect} from 'react'
 import './App.css'
 import RangeSlider from './components/RangeSlider'
-import {createFFmpeg, fetchFile} from '@ffmpeg/ffmpeg'
+import pkg from '../package.json'
 
 function App() {
     const ref = useRef<HTMLDivElement | null>(null)
@@ -31,22 +31,22 @@ function App() {
     const playPause = async () => {
         if (!videoRef.current) return
 
-        const video = videoRef.current!
+        const video = videoRef.current
 
-        if (video.paused) {
+        if (video && video.paused) {
             video.currentTime = trimRange[0] / 1000
             await video.play()
         }
         else {
-            video.pause()
+            video && video.pause()
         }
     }
 
     const [ trimRange, setTrimRange ] = useState([ 5, 10 ])
 
     const onRangeChanged = (range: [number, number]) => {
-        const video = videoRef.current!
-        video.pause()
+        const video = videoRef.current
+        video && video.pause()
         setTrimRange(range)
     }
 
@@ -214,7 +214,8 @@ function App() {
     const resizeDebounceRef = useRef(0)
 
     const resize = (resizeImmediately?: boolean) => {
-        const videoEl = videoRef.current!
+        const videoEl = videoRef.current
+        if (!videoEl) return
 
         unsetSize()
         videoEl.pause()
@@ -258,6 +259,18 @@ function App() {
      * Export
      */
 
+    const copyToClipboard = async (text: string) => {
+        window.focus()
+
+        try {
+            await navigator.clipboard.writeText(text)
+        } catch (err) {
+            console.log(err)
+        }
+
+        window.focus()
+    }
+
     const msToTime = (s) => {
         function pad(n: number, z?: number) {
             z = z || 2
@@ -275,7 +288,8 @@ function App() {
     }
 
     const prepareExport = () => {
-        const output = prompt('Output file name:', 'clip')
+        // const output = prompt('Output file name:', 'clip')
+        const output = 'clip' // TODO
         const input = fileRef.current!.name
 
         const from = msToTime(trimRange[0])
@@ -293,15 +307,19 @@ function App() {
     const exportVideo = () => {
         const [ input, output, width, height, x, y, from, to ] = prepareExport()
 
-        const cmd = `ffmpeg -y -i "${input}" -filter:v "crop=${width}:${height}:${x}:${y}" -vcodec libx264 -an -ss ${from} -to ${to} ${output}.mp4`
-        prompt('FFMPEG Command:', cmd)
+        const cmd = `ffmpeg -y -i "${input}" -filter:v "crop=${width}:${height}:${x}:${y}" -vcodec libx264 -an -ss ${from} -to ${to} "${output}.mp4"`
+        copyToClipboard(cmd)
+        alert('Command copied to clipboard.')
+        // prompt('FFMPEG Command Copied!', cmd)
     }
 
     const exportGif = () => {
         const [ input, output, width, height, x, y, from, to ] = prepareExport()
 
-        const cmd = `ffmpeg -y -i "${input}" -filter:v "crop=${width}:${height}:${x}:${y},fps=24,scale=${Math.round(width / 2)}:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0 -an -ss ${from} -to ${to} ${output}.gif`
-        prompt('FFMPEG Command:', cmd)
+        const cmd = `ffmpeg -y -i "${input}" -filter:v "crop=${width}:${height}:${x}:${y},fps=24,scale=${Math.round(width / 2)}:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0 -an -ss ${from} -to ${to} "${output}.gif"`
+        copyToClipboard(cmd)
+        alert('Command copied to clipboard.')
+        // prompt('FFMPEG Command:', cmd)
     }
 
     /*
@@ -327,7 +345,24 @@ function App() {
             {
                 !videoSrc && (
                     <div className='DropTarget'>
-                        Drop Video Here
+                        <p>Drop Video Here</p>
+                        <p>
+                            <small>
+                                Quick Clip generates FFMPEG CLI commands from a drag-and-drop UI so you can easily crop, trim, and transcode video clips.
+                            </small>
+                        </p>
+                        <p>
+                            <small>
+                                <strong>Quick Clip</strong> by <strong><a href='https://github.com/twocatmoon' target='_blank'>Two-Cat Moon</a></strong>
+                                <br />
+                                <a href='https://github.com/twocatmoon/quick-clip' target='_blank'>GitHub</a> &middot;&nbsp;
+                                <a href='https://github.com/twocatmoon/quick-clip/issues' target='_blank'>Report Bug</a> &middot;&nbsp;
+                                <a href='https://github.com/twocatmoon/quick-clip/issues' target='_blank'>Request Feature</a>
+                            </small>
+                        </p>
+                        <p>
+                            <small><code>v. {pkg.version}</code></small>
+                        </p>
                     </div>
                 )
             }
@@ -340,6 +375,7 @@ function App() {
                             onPause={() => setIsPlaying(false)}
                             onPlay={() => setIsPlaying(true)}
                             src={videoSrc}
+                            muted
                         />
                         <div className='VideoContainer'>
                             <div className='VideoContainerPanel'>
