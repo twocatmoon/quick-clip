@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && touch dist/.nojekyll",
+    "build": "tsc && vite build --base=/quick-clip && touch dist/.nojekyll",
     "preview": "vite preview",
     "deploy": "npm run build && git checkout gh-pages && mv ./dist/* . && git add -A && git commit -m 'Deploy' && git push && git checkout trunk"
   },
