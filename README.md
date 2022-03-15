@@ -16,7 +16,7 @@
   <p align="center">
     Quick Clip generates FFMPEG CLI commands from a drag-and-drop UI, so you can easily crop, trim, and transcode video clips.
     <br />
-    <a href="https://quick-clip.twocatmoon.com"><strong>Start using Quick Clip »</strong></a>
+    <a href="https://twocatmoon.github.io/quick-clip/"><strong>Start using Quick Clip »</strong></a>
     <br />
     <br />
     <a href="https://github.com/twocatmoon/quick-clip/issues">Report Bug</a>
